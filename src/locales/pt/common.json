@@ -1,0 +1,151 @@
+{
+  "app": {
+    "name": "Finance App",
+    "tagline": "Domine seu futuro financeiro",
+    "description": "Aprenda investimentos e educação financeira através de lições interativas, simulações e prática real."
+  },
+  "nav": {
+    "home": "Início",
+    "learn": "Aprender",
+    "practice": "Praticar",
+    "portfolio": "Portfólio",
+    "leaderboard": "Ranking",
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "logout": "Sair"
+  },
+  "auth": {
+    "login": "Entrar",
+    "signup": "Cadastrar",
+    "logout": "Sair",
+    "email": "E-mail",
+    "password": "Senha",
+    "confirmPassword": "Confirmar senha",
+    "forgotPassword": "Esqueceu a senha?",
+    "noAccount": "Não tem uma conta?",
+    "hasAccount": "Já tem uma conta?",
+    "continueWithGoogle": "Continuar com Google",
+    "continueWithApple": "Continuar com Apple",
+    "orContinueWith": "Ou continue com"
+  },
+  "onboarding": {
+    "welcome": "Bem-vindo!",
+    "welcomeMessage": "Vamos personalizar sua experiência de aprendizado",
+    "selectCountry": "Selecione seu país",
+    "selectCountryDescription": "Isso nos ajuda a fornecer informações financeiras relevantes para sua região",
+    "selectAgeGroup": "Selecione sua faixa etária",
+    "selectAgeGroupDescription": "Adaptaremos exemplos e estratégias para sua fase de vida",
+    "continue": "Continuar",
+    "back": "Voltar",
+    "finish": "Começar"
+  },
+  "countries": {
+    "US": "Estados Unidos",
+    "BR": "Brasil",
+    "UK": "Reino Unido"
+  },
+  "ageGroups": {
+    "STUDENT": "Estudante (18-22)",
+    "YOUNG_ADULT": "Jovem Adulto (23-35)",
+    "ADULT": "Adulto (36-50)",
+    "PRE_RETIREMENT": "Pré-Aposentadoria (51-65)",
+    "RETIREMENT": "Aposentadoria (65+)"
+  },
+  "dashboard": {
+    "greeting": "Olá, {name}!",
+    "continuelearning": "Continue Aprendendo",
+    "yourProgress": "Seu Progresso",
+    "streak": "Dias Seguidos",
+    "currency": "Moedas",
+    "lessonsCompleted": "Lições Completas",
+    "quizzesPassed": "Quizzes Passados"
+  },
+  "lessons": {
+    "lesson": "Lição",
+    "lessons": "Lições",
+    "start": "Iniciar Lição",
+    "continue": "Continuar",
+    "completed": "Concluída",
+    "locked": "Bloqueada",
+    "available": "Disponível",
+    "minutes": "{count} min",
+    "xpReward": "+{count} XP",
+    "currencyReward": "+{count} moedas",
+    "prerequisites": "Complete primeiro:",
+    "nextSection": "Próximo",
+    "previousSection": "Anterior",
+    "finishLesson": "Finalizar Lição",
+    "congratulations": "Parabéns!",
+    "lessonComplete": "Você completou esta lição"
+  },
+  "quiz": {
+    "quiz": "Quiz",
+    "question": "Pergunta {current} de {total}",
+    "checkAnswer": "Verificar Resposta",
+    "nextQuestion": "Próxima Pergunta",
+    "correct": "Correto!",
+    "incorrect": "Não está certo",
+    "tryAgain": "Tentar Novamente",
+    "viewResults": "Ver Resultados",
+    "score": "Sua Pontuação: {score}%",
+    "passed": "Aprovado!",
+    "failed": "Não aprovado",
+    "retake": "Refazer Quiz",
+    "continue": "Continuar"
+  },
+  "portfolio": {
+    "title": "Simulador de Investimentos",
+    "balance": "Saldo em Dinheiro",
+    "totalValue": "Valor Total",
+    "totalReturn": "Retorno Total",
+    "holdings": "Ativos",
+    "noHoldings": "Nenhum ativo ainda",
+    "trade": "Negociar",
+    "buy": "Comprar",
+    "sell": "Vender",
+    "symbol": "Símbolo",
+    "quantity": "Quantidade",
+    "price": "Preço",
+    "total": "Total",
+    "execute": "Executar Operação",
+    "history": "Histórico de Operações",
+    "watchlist": "Lista de Observação"
+  },
+  "leaderboard": {
+    "title": "Ranking",
+    "rank": "Posição",
+    "user": "Usuário",
+    "score": "Pontuação",
+    "allTime": "Todos os Tempos",
+    "weekly": "Esta Semana",
+    "monthly": "Este Mês",
+    "currency": "Moedas",
+    "portfolioValue": "Valor do Portfólio",
+    "xp": "XP",
+    "streak": "Sequência"
+  },
+  "streaks": {
+    "currentStreak": "Sequência Atual",
+    "longestStreak": "Maior Sequência",
+    "days": "dias",
+    "keepItUp": "Continue assim!",
+    "streakLost": "Sequência perdida! Comece uma nova hoje.",
+    "todayComplete": "Atividade de hoje completa!"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Algo deu errado",
+    "retry": "Tentar Novamente",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "close": "Fechar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "viewAll": "Ver Tudo",
+    "learnMore": "Saiba Mais"
+  }
+}

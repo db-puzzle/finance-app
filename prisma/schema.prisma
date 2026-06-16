@@ -1,0 +1,479 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  avatarUrl     String?
+  
+  // Profile settings
+  country       Country   @default(US)
+  ageGroup      AgeGroup  @default(ADULT)
+  locale        String    @default("en")
+  
+  // Gamification
+  virtualCurrency Int      @default(0)
+  currentStreak   Int      @default(0)
+  longestStreak   Int      @default(0)
+  lastActivityAt  DateTime?
+  
+  // Onboarding
+  onboardingCompleted Boolean @default(false)
+  placementTestCompleted Boolean @default(false)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  progress      UserProgress[]
+  quizAttempts  QuizAttempt[]
+  portfolios    VirtualPortfolio[]
+  streakHistory StreakHistory[]
+  achievements  UserAchievement[]
+
+  @@map("users")
+}
+
+enum Country {
+  US
+  BR
+  UK
+}
+
+enum AgeGroup {
+  STUDENT      // 18-22 (college)
+  YOUNG_ADULT  // 23-35
+  ADULT        // 36-50
+  PRE_RETIREMENT // 51-65
+  RETIREMENT   // 65+
+}
+
+// ============================================
+// LEARNING CONTENT
+// ============================================
+
+model LearningPath {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  
+  // Translations stored as JSON: { "en": "...", "pt": "..." }
+  title       Json
+  description Json
+  
+  iconName    String?
+  color       String?
+  order       Int      @default(0)
+  
+  // Path type
+  isFoundation Boolean @default(false) // Required for all users
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  lessons     Lesson[]
+
+  @@map("learning_paths")
+}
+
+model Lesson {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  pathId          String
+  
+  // Translations stored as JSON
+  title           Json
+  description     Json
+  
+  // Content (markdown with images)
+  content         Json     // { "en": "...", "pt": "..." }
+  
+  // Lesson metadata
+  order           Int      @default(0)
+  estimatedMinutes Int     @default(10)
+  xpReward        Int      @default(100)
+  currencyReward  Int      @default(50)
+  
+  // Prerequisites (lesson IDs that must be completed first)
+  prerequisites   String[] @default([])
+  
+  // Unlocking
+  isLocked        Boolean  @default(true)
+  requiredLevel   Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  path            LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  sections        LessonSection[]
+  quizzes         Quiz[]
+  progress        UserProgress[]
+  
+  @@index([pathId])
+  @@map("lessons")
+}
+
+model LessonSection {
+  id          String   @id @default(cuid())
+  lessonId    String
+  
+  // Translations
+  title       Json
+  content     Json     // Markdown content
+  
+  order       Int      @default(0)
+  
+  // Section type
+  type        SectionType @default(CONTENT)
+  
+  // For interactive sections
+  interactiveData Json?  // Config for simulators, calculators, etc.
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  
+  @@index([lessonId])
+  @@map("lesson_sections")
+}
+
+enum SectionType {
+  CONTENT              // Regular text/image content
+  VIDEO                // Video embed (future)
+  COMPOUND_CALCULATOR  // Interactive compound interest calc
+  PORTFOLIO_BUILDER    // Portfolio allocation exercise
+  MARKET_SIMULATOR     // Market scenario simulator
+  PAPER_TRADING        // Paper trading interface
+  NEWS_ANALYSIS        // News interpretation exercise
+}
+
+// ============================================
+// QUIZZES & EXERCISES
+// ============================================
+
+model Quiz {
+  id          String   @id @default(cuid())
+  lessonId    String
+  
+  // Translations
+  title       Json
+  
+  // Quiz settings
+  type        QuizType @default(LESSON_QUIZ)
+  passingScore Int     @default(70) // Percentage
+  maxAttempts Int?     // null = unlimited
+  timeLimit   Int?     // In seconds, null = no limit
+  
+  xpReward    Int      @default(50)
+  currencyReward Int   @default(25)
+  
+  order       Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  questions   QuizQuestion[]
+  attempts    QuizAttempt[]
+  
+  @@index([lessonId])
+  @@map("quizzes")
+}
+
+enum QuizType {
+  LESSON_QUIZ      // End of lesson quiz
+  PLACEMENT_TEST   // Skip ahead test
+  PRACTICE         // Optional practice
+  CHALLENGE        // Daily challenge
+}
+
+model QuizQuestion {
+  id          String   @id @default(cuid())
+  quizId      String
+  
+  // Translations
+  question    Json
+  explanation Json?    // Shown after answering
+  
+  type        QuestionType @default(MULTIPLE_CHOICE)
+  
+  // Options for multiple choice / matching
+  // Format: [{ "id": "a", "text": { "en": "...", "pt": "..." }, "isCorrect": true }]
+  options     Json
+  
+  // For matching questions, the pairs to match
+  // Format: [{ "left": {...}, "right": {...} }]
+  matchingPairs Json?
+  
+  // For fill-in-blank, the correct answers
+  correctAnswers String[]  @default([])
+  
+  points      Int      @default(10)
+  order       Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  @@index([quizId])
+  @@map("quiz_questions")
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  MULTIPLE_SELECT  // Multiple correct answers
+  MATCHING         // Drag and drop matching
+  FILL_BLANK       // Fill in the blank
+  TRUE_FALSE
+}
+
+// ============================================
+// USER PROGRESS & GAMIFICATION
+// ============================================
+
+model UserProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  lessonId    String
+  
+  status      ProgressStatus @default(NOT_STARTED)
+  
+  // Progress tracking
+  currentSection Int    @default(0)
+  completedSections Int[] @default([])
+  
+  // Scores
+  bestQuizScore Int?
+  quizAttempts  Int     @default(0)
+  
+  // Rewards earned
+  xpEarned    Int      @default(0)
+  currencyEarned Int   @default(0)
+  
+  startedAt   DateTime?
+  completedAt DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
+  @@map("user_progress")
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model QuizAttempt {
+  id          String   @id @default(cuid())
+  userId      String
+  quizId      String
+  
+  score       Int      // Percentage
+  passed      Boolean
+  
+  // Answers given: { questionId: answer }
+  answers     Json
+  
+  timeTaken   Int?     // In seconds
+  
+  xpEarned    Int      @default(0)
+  currencyEarned Int   @default(0)
+  
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([quizId])
+  @@map("quiz_attempts")
+}
+
+model StreakHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  
+  date        DateTime @db.Date
+  activityCount Int    @default(1) // Number of activities that day
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, date])
+  @@index([userId])
+  @@map("streak_history")
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  
+  // Translations
+  title       Json
+  description Json
+  
+  iconName    String
+  
+  // Requirements
+  type        AchievementType
+  threshold   Int      // e.g., 7 for "7-day streak"
+  
+  xpReward    Int      @default(100)
+  currencyReward Int   @default(50)
+  
+  createdAt   DateTime @default(now())
+  
+  users       UserAchievement[]
+
+  @@map("achievements")
+}
+
+enum AchievementType {
+  STREAK           // X-day streak
+  LESSONS_COMPLETED // Complete X lessons
+  PATH_COMPLETED   // Complete a learning path
+  QUIZ_PERFECT     // Get 100% on X quizzes
+  PORTFOLIO_VALUE  // Reach X portfolio value
+  CURRENCY_EARNED  // Earn X virtual currency
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  
+  unlockedAt    DateTime @default(now())
+  
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@map("user_achievements")
+}
+
+// ============================================
+// PAPER TRADING / SIMULATIONS
+// ============================================
+
+model VirtualPortfolio {
+  id          String   @id @default(cuid())
+  userId      String
+  
+  name        String   @default("My Portfolio")
+  
+  // Starting and current cash
+  initialCash Decimal  @default(10000) @db.Decimal(15, 2)
+  cashBalance Decimal  @default(10000) @db.Decimal(15, 2)
+  
+  // Performance metrics (updated periodically)
+  totalValue  Decimal  @default(10000) @db.Decimal(15, 2)
+  totalReturn Decimal  @default(0) @db.Decimal(10, 4) // Percentage
+  
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  holdings    PortfolioHolding[]
+  trades      VirtualTrade[]
+  
+  @@index([userId])
+  @@map("virtual_portfolios")
+}
+
+model PortfolioHolding {
+  id          String   @id @default(cuid())
+  portfolioId String
+  
+  symbol      String   // Stock ticker
+  quantity    Decimal  @db.Decimal(15, 6)
+  avgCost     Decimal  @db.Decimal(15, 2) // Average cost basis
+  
+  // Current value (updated periodically)
+  currentPrice Decimal? @db.Decimal(15, 2)
+  currentValue Decimal? @db.Decimal(15, 2)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  portfolio   VirtualPortfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  
+  @@unique([portfolioId, symbol])
+  @@index([portfolioId])
+  @@map("portfolio_holdings")
+}
+
+model VirtualTrade {
+  id          String   @id @default(cuid())
+  portfolioId String
+  
+  type        TradeType
+  symbol      String
+  quantity    Decimal  @db.Decimal(15, 6)
+  price       Decimal  @db.Decimal(15, 2)
+  totalValue  Decimal  @db.Decimal(15, 2)
+  
+  executedAt  DateTime @default(now())
+  
+  portfolio   VirtualPortfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  
+  @@index([portfolioId])
+  @@map("virtual_trades")
+}
+
+enum TradeType {
+  BUY
+  SELL
+}
+
+// ============================================
+// LEADERBOARDS
+// ============================================
+
+model LeaderboardEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  
+  type        LeaderboardType
+  period      String   // "all-time", "2024-W01", "2024-01"
+  
+  score       Int      // Virtual currency or portfolio value
+  rank        Int?
+  
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([userId, type, period])
+  @@index([type, period, score(sort: Desc)])
+  @@map("leaderboard_entries")
+}
+
+enum LeaderboardType {
+  CURRENCY        // Total virtual currency
+  PORTFOLIO_VALUE // Best portfolio performance
+  XP              // Total XP earned
+  STREAK          // Longest streak
+}

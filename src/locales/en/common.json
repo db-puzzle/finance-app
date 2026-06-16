@@ -1,0 +1,151 @@
+{
+  "app": {
+    "name": "Finance App",
+    "tagline": "Master your financial future",
+    "description": "Learn investing and financial literacy through interactive lessons, simulations, and real-world practice."
+  },
+  "nav": {
+    "home": "Home",
+    "learn": "Learn",
+    "practice": "Practice",
+    "portfolio": "Portfolio",
+    "leaderboard": "Leaderboard",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "auth": {
+    "login": "Log in",
+    "signup": "Sign up",
+    "logout": "Log out",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithApple": "Continue with Apple",
+    "orContinueWith": "Or continue with"
+  },
+  "onboarding": {
+    "welcome": "Welcome!",
+    "welcomeMessage": "Let's personalize your learning experience",
+    "selectCountry": "Select your country",
+    "selectCountryDescription": "This helps us provide relevant financial information for your region",
+    "selectAgeGroup": "Select your age group",
+    "selectAgeGroupDescription": "We'll tailor examples and strategies to your life stage",
+    "continue": "Continue",
+    "back": "Back",
+    "finish": "Get Started"
+  },
+  "countries": {
+    "US": "United States",
+    "BR": "Brazil",
+    "UK": "United Kingdom"
+  },
+  "ageGroups": {
+    "STUDENT": "Student (18-22)",
+    "YOUNG_ADULT": "Young Adult (23-35)",
+    "ADULT": "Adult (36-50)",
+    "PRE_RETIREMENT": "Pre-Retirement (51-65)",
+    "RETIREMENT": "Retirement (65+)"
+  },
+  "dashboard": {
+    "greeting": "Hello, {name}!",
+    "continuelearning": "Continue Learning",
+    "yourProgress": "Your Progress",
+    "streak": "Day Streak",
+    "currency": "Coins",
+    "lessonsCompleted": "Lessons Completed",
+    "quizzesPassed": "Quizzes Passed"
+  },
+  "lessons": {
+    "lesson": "Lesson",
+    "lessons": "Lessons",
+    "start": "Start Lesson",
+    "continue": "Continue",
+    "completed": "Completed",
+    "locked": "Locked",
+    "available": "Available",
+    "minutes": "{count} min",
+    "xpReward": "+{count} XP",
+    "currencyReward": "+{count} coins",
+    "prerequisites": "Complete these first:",
+    "nextSection": "Next",
+    "previousSection": "Previous",
+    "finishLesson": "Finish Lesson",
+    "congratulations": "Congratulations!",
+    "lessonComplete": "You've completed this lesson"
+  },
+  "quiz": {
+    "quiz": "Quiz",
+    "question": "Question {current} of {total}",
+    "checkAnswer": "Check Answer",
+    "nextQuestion": "Next Question",
+    "correct": "Correct!",
+    "incorrect": "Not quite right",
+    "tryAgain": "Try Again",
+    "viewResults": "View Results",
+    "score": "Your Score: {score}%",
+    "passed": "Passed!",
+    "failed": "Not passed",
+    "retake": "Retake Quiz",
+    "continue": "Continue"
+  },
+  "portfolio": {
+    "title": "Paper Trading",
+    "balance": "Cash Balance",
+    "totalValue": "Total Value",
+    "totalReturn": "Total Return",
+    "holdings": "Holdings",
+    "noHoldings": "No holdings yet",
+    "trade": "Trade",
+    "buy": "Buy",
+    "sell": "Sell",
+    "symbol": "Symbol",
+    "quantity": "Quantity",
+    "price": "Price",
+    "total": "Total",
+    "execute": "Execute Trade",
+    "history": "Trade History",
+    "watchlist": "Watchlist"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "rank": "Rank",
+    "user": "User",
+    "score": "Score",
+    "allTime": "All Time",
+    "weekly": "This Week",
+    "monthly": "This Month",
+    "currency": "Coins",
+    "portfolioValue": "Portfolio Value",
+    "xp": "XP",
+    "streak": "Streak"
+  },
+  "streaks": {
+    "currentStreak": "Current Streak",
+    "longestStreak": "Longest Streak",
+    "days": "days",
+    "keepItUp": "Keep it up!",
+    "streakLost": "Streak lost! Start a new one today.",
+    "todayComplete": "Today's activity complete!"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "viewAll": "View All",
+    "learnMore": "Learn More"
+  }
+}
