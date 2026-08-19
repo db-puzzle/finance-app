@@ -17,6 +17,7 @@ import {
   TrendingUp
 } from 'lucide-react'
 import { foundationLessons } from '@/content/lessons/foundation'
+import { useProgressStore } from '@/stores/progress-store'
 import { cn } from '@/lib/utils'
 
 type LessonStatus = 'completed' | 'in-progress' | 'available' | 'locked'
@@ -24,19 +25,24 @@ type LessonStatus = 'completed' | 'in-progress' | 'available' | 'locked'
 export default function LearnPage() {
   const [locale] = useState<'en' | 'pt'>('en')
 
-  // Mock progress data - in production, this would come from the user's progress store
-  const completedLessons: string[] = []
-  const currentLessonId = 'lesson-1'
+  const hasHydrated = useProgressStore((state) => state.hasHydrated)
+  const progressMap = useProgressStore((state) => state.progressMap)
+  const isLessonCompleted = useProgressStore((state) => state.isLessonCompleted)
+  const isLessonAvailable = useProgressStore((state) => state.isLessonAvailable)
+  const getCompletedLessonIds = useProgressStore((state) => state.getCompletedLessonIds)
+  const getContinueLessonId = useProgressStore((state) => state.getContinueLessonId)
+
+  const completedLessons = hasHydrated ? getCompletedLessonIds() : []
+  const lessonIds = foundationLessons.map((lesson) => lesson.id)
+  const currentLessonId = hasHydrated
+    ? getContinueLessonId(lessonIds) ?? lessonIds[0]
+    : lessonIds[0]
 
   const getLessonStatus = (lessonId: string, prerequisites: string[]): LessonStatus => {
-    if (completedLessons.includes(lessonId)) return 'completed'
-    if (lessonId === currentLessonId) return 'in-progress'
-    
-    const allPrereqsCompleted = prerequisites.every(prereq => 
-      completedLessons.includes(prereq)
-    )
-    
-    return allPrereqsCompleted ? 'available' : 'locked'
+    if (isLessonCompleted(lessonId)) return 'completed'
+    if (progressMap[lessonId]?.status === 'IN_PROGRESS') return 'in-progress'
+    if (isLessonAvailable(lessonId, prerequisites)) return 'available'
+    return 'locked'
   }
 
   const getStatusIcon = (status: LessonStatus) => {
@@ -122,6 +128,16 @@ export default function LearnPage() {
           {foundationLessons.map((lesson, index) => {
             const status = getLessonStatus(lesson.id, lesson.prerequisites)
             const isLocked = status === 'locked'
+            const sectionProgress = progressMap[lesson.id]
+            const sectionPercent =
+              status === 'in-progress' && sectionProgress
+                ? Math.min(
+                    100,
+                    Math.round(
+                      (sectionProgress.currentSection / (lesson.sections.length + 1)) * 100
+                    )
+                  )
+                : 0
 
             return (
               <Card 
@@ -183,6 +199,12 @@ export default function LearnPage() {
                       )}>
                         {lesson.description[locale]}
                       </p>
+
+                      {status === 'in-progress' && sectionPercent > 0 && (
+                        <div className="mb-3">
+                          <Progress value={sectionPercent} className="h-1.5" />
+                        </div>
+                      )}
 
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">

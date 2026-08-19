@@ -36,6 +36,8 @@ import {
 import { endDemoMode, type DemoUser } from '@/lib/demo-mode'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { foundationLessons } from '@/content/lessons/foundation'
+import { useProgressStore } from '@/stores/progress-store'
 
 type DashboardContentProps = {
   user: SupabaseUser | DemoUser
@@ -66,26 +68,53 @@ export function DashboardContent({ user, isDemo = false }: DashboardContentProps
     router.push('/')
   }
 
-  const mockLessons = [
-    { id: '1', title: 'Why Financial Literacy Matters', status: 'completed', xp: 100 },
-    { id: '2', title: 'Understanding Income vs Expenses', status: 'completed', xp: 100 },
-    { id: '3', title: 'Building Your First Budget', status: 'in_progress', xp: 100, progress: 60 },
-    { id: '4', title: 'Emergency Funds: Your Safety Net', status: 'available', xp: 100 },
-    { id: '5', title: 'The Power of Compound Interest', status: 'locked', xp: 150 },
-  ]
+  const progressMap = useProgressStore((state) => state.progressMap)
+  const isLessonCompleted = useProgressStore((state) => state.isLessonCompleted)
+  const isLessonAvailable = useProgressStore((state) => state.isLessonAvailable)
+  const getCompletedLessonIds = useProgressStore((state) => state.getCompletedLessonIds)
+
+  const completedLessonIds = getCompletedLessonIds()
+
+  const lessonCards = foundationLessons.map((lesson) => {
+    let status: 'completed' | 'in_progress' | 'available' | 'locked' = 'locked'
+    if (isLessonCompleted(lesson.id)) {
+      status = 'completed'
+    } else if (progressMap[lesson.id]?.status === 'IN_PROGRESS') {
+      status = 'in_progress'
+    } else if (isLessonAvailable(lesson.id, lesson.prerequisites)) {
+      status = 'available'
+    }
+
+    const saved = progressMap[lesson.id]
+    const progress =
+      status === 'in_progress' && saved
+        ? Math.min(
+            100,
+            Math.round((saved.currentSection / (lesson.sections.length + 1)) * 100)
+          )
+        : undefined
+
+    return {
+      id: lesson.id,
+      title: lesson.title.en,
+      status,
+      xp: lesson.xpReward,
+      progress,
+    }
+  })
 
   const mockStats = isDemoUser(user) 
     ? {
         streak: user.currentStreak,
         coins: user.virtualCurrency,
-        lessonsCompleted: 2,
-        totalLessons: 20,
+        lessonsCompleted: completedLessonIds.length,
+        totalLessons: foundationLessons.length,
       }
     : {
         streak: 5,
         coins: 450,
-        lessonsCompleted: 2,
-        totalLessons: 20,
+        lessonsCompleted: completedLessonIds.length,
+        totalLessons: foundationLessons.length,
       }
 
   return (
@@ -223,7 +252,7 @@ export function DashboardContent({ user, isDemo = false }: DashboardContentProps
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockLessons.map((lesson) => (
+                  {lessonCards.map((lesson) => (
                     <div 
                       key={lesson.id}
                       className="flex items-center gap-4 p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
